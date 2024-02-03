@@ -7,7 +7,7 @@ import { getOperationFailedMessage } from "../messages.js";
 export const deleteFile = async (path) => {
   const fileToRemovePath = resolve(Path.getCurrentPath(), path);
   try {
-    await rm(fileToRemovePath);
+    await rm(fileToRemovePath, { force: true });
     console.log(`'${fileToRemovePath}' successfully removed!`);
   } catch (error) {
     if (error.code === "ENOENT") {
