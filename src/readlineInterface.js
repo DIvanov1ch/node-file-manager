@@ -16,6 +16,7 @@ import { renameFile } from "./operations/renameFile.js";
 import { copyFile } from "./operations/copyFile.js";
 import { deleteFile } from "./operations/deleteFile.js";
 import { moveFile } from "./operations/moveFile.js";
+import { getOperatingSystemInfo as getOSInfo } from "./operations/getOSInfo.js";
 
 export const createIOInterface = () => {
   const rl = createInterface({ input, output });
@@ -48,11 +49,15 @@ export const createIOInterface = () => {
       const paths = operation.replace("cp ", "");
       await copyFile(paths);
     } else if (operation.startsWith("rm ")) {
-      const paths = operation.replace("rm ", "");
-      await deleteFile(paths);
+      const path = operation.replace("rm ", "");
+      await deleteFile(path);
     } else if (operation.startsWith("mv ")) {
       const paths = operation.replace("mv ", "");
       await moveFile(paths);
+    } else if (operation.startsWith("os ")) {
+      const flag = operation.replace("os --", "");
+      const info = getOSInfo(flag);
+      output.write(info +"\n");
     } else {
       output.write(getInvalidOperationMessage(input) + "\n");
     }
