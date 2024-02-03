@@ -15,6 +15,7 @@ import { createFile } from "./operations/createFile.js";
 import { renameFile } from "./operations/renameFile.js";
 import { copyFile } from "./operations/copyFile.js";
 import { deleteFile } from "./operations/deleteFile.js";
+import { moveFile } from "./operations/moveFile.js";
 
 export const createIOInterface = () => {
   const rl = createInterface({ input, output });
@@ -49,6 +50,9 @@ export const createIOInterface = () => {
     } else if (operation.startsWith("rm ")) {
       const paths = operation.replace("rm ", "");
       await deleteFile(paths);
+    } else if (operation.startsWith("mv ")) {
+      const paths = operation.replace("mv ", "");
+      await moveFile(paths);
     } else {
       output.write(getInvalidOperationMessage(input) + "\n");
     }
