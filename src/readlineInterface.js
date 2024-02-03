@@ -17,6 +17,7 @@ import { copyFile } from "./operations/copyFile.js";
 import { deleteFile } from "./operations/deleteFile.js";
 import { moveFile } from "./operations/moveFile.js";
 import { getOperatingSystemInfo as getOSInfo } from "./operations/getOSInfo.js";
+import { calculateHash } from "./operations/calculateHash.js";
 
 export const createIOInterface = () => {
   const rl = createInterface({ input, output });
@@ -58,7 +59,10 @@ export const createIOInterface = () => {
       const flag = operation.replace("os --", "");
       const info = getOSInfo(flag);
       output.write(info +"\n");
-    } else {
+    } else if (operation.startsWith("hash ")) {
+      const path = operation.replace("hash ", "");
+      await calculateHash(path);
+    }else {
       output.write(getInvalidOperationMessage(input) + "\n");
     }
     printCurrentDirectory();
