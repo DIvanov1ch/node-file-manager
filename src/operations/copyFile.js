@@ -22,9 +22,6 @@ export const copyFile = async (paths) => {
     const input = createReadStream(source);
     const output = createWriteStream(destination, { flags: "wx" });
     await pipeline(input, output, { end: false });
-    output.on("error", (error) => {
-      console.log(error.message);
-    });
     console.log("File successfully copied!");
   } catch (error) {
     if (error.code === "ENOENT") {
