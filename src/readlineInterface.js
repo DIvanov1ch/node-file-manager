@@ -18,6 +18,8 @@ import { deleteFile } from "./operations/deleteFile.js";
 import { moveFile } from "./operations/moveFile.js";
 import { getOperatingSystemInfo as getOSInfo } from "./operations/getOSInfo.js";
 import { calculateHash } from "./operations/calculateHash.js";
+import { compressFile } from "./operations/compressFile.js";
+import { decompressFile } from "./operations/decompressFile.js";
 
 export const createIOInterface = () => {
   const rl = createInterface({ input, output });
@@ -58,11 +60,17 @@ export const createIOInterface = () => {
     } else if (operation.startsWith("os ")) {
       const flag = operation.replace("os --", "");
       const info = getOSInfo(flag);
-      output.write(info +"\n");
+      output.write(info + "\n");
     } else if (operation.startsWith("hash ")) {
       const path = operation.replace("hash ", "");
       await calculateHash(path);
-    }else {
+    } else if (operation.startsWith("compress ")) {
+      const paths = operation.replace("compress ", "");
+      await compressFile(paths);
+    } else if (operation.startsWith("decompress ")) {
+      const paths = operation.replace("decompress ", "");
+      await decompressFile(paths);
+    } else {
       output.write(getInvalidOperationMessage(input) + "\n");
     }
     printCurrentDirectory();
