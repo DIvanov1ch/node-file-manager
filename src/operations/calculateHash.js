@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { stdout } from "process";
 
 import { Path } from "../Path.js";
-import { getOperationFailedMessage } from "../messages.js";
+import { printError } from "../utils/printError.js";
 
 export const calculateHash = async (path) => {
   const filepath = resolve(Path.getCurrentPath(), path);
@@ -15,12 +15,6 @@ export const calculateHash = async (path) => {
     await pipeline(input, hash.setEncoding("hex"), stdout, { end: false });
     stdout.write("\n");
   } catch (error) {
-    if (error.code === "ENOENT") {
-      console.log(
-        getOperationFailedMessage(`No such file or directory: '${filepath}'`)
-      );
-    } else {
-      console.log(getOperationFailedMessage(error.message));
-    }
+    printError(error);
   }
 };

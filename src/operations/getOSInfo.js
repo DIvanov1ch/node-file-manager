@@ -3,7 +3,7 @@ import { getOperationFailedMessage } from "../messages.js";
 
 export const getOperatingSystemInfo = (flag) => {
   try {
-    if (flag === "EOL") return `End-of-line marker: '${EOL}'`;
+    if (flag === "EOL") return `End-of-line marker: ${JSON.stringify(EOL)}`;
     if (flag === "homedir") return `Homedir: ${homedir()}`;
     if (flag === "username") return `Username: ${userInfo().username}`;
     if (flag === "architecture") return `CPU architecture: ${arch()}`;
