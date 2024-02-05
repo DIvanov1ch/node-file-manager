@@ -9,7 +9,7 @@ import { getInvalidArgsMessage } from "../messages.js";
 
 export const createFile = async (input) => {
   const filenames = parsePath(input);
-  if (!filenames) {
+  if (!filenames.length) {
     console.log(getInvalidArgsMessage());
     return;
   }
