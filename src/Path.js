@@ -1,5 +1,6 @@
 import { homedir, platform } from "node:os";
 import { resolve, sep } from "node:path";
+import { isWindows } from "./constants.js";
 
 export const Path = (() => {
   let currentPath = homedir();
@@ -15,7 +16,7 @@ export const Path = (() => {
     },
 
     getRootDirectory: () =>
-      platform() === "win32"
+      isWindows
         ? resolve(`${currentPath.split(sep).at(0).toUpperCase()}/`)
         : "/",
   };
