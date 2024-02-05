@@ -1,13 +1,12 @@
-import { resolve, basename } from "node:path";
+import { resolve, posix, win32 } from "node:path";
 import { createReadStream, createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 
 import { Path } from "../Path.js";
-import { extractSourceAndDestination as parsePath } from "../utils/extractSrcAndDest.js";
-import {
-  getInvalidArgsMessage,
-  getOperationFailedMessage,
-} from "../messages.js";
+import { isWindows } from "../constants.js";
+import { extractPaths as parsePath } from "../utils/extractPaths.js";
+import { getInvalidArgsMessage } from "../messages.js";
+import { printError } from "../utils/printError.js";
 
 export const copyFile = async (paths) => {
   const [src, dest] = parsePath(paths);
@@ -16,26 +15,13 @@ export const copyFile = async (paths) => {
     return;
   }
   const source = resolve(Path.getCurrentPath(), src);
-  const filename = basename(source);
+  const filename = isWindows ? win32.basename(source) : posix.basename(source);
   const destination = resolve(Path.getCurrentPath(), dest, filename);
   try {
     const input = createReadStream(source);
     const output = createWriteStream(destination, { flags: "wx" });
     await pipeline(input, output, { end: false });
-    console.log("File successfully copied!");
   } catch (error) {
-    if (error.code === "ENOENT") {
-      console.log(
-        getOperationFailedMessage(
-          `No such file or directory: '${source}' -> '${destination}'`
-        )
-      );
-    } else if (error.code === "EEXIST") {
-      console.log(
-        getOperationFailedMessage(`File already exists: '${destination}'`)
-      );
-    } else {
-      console.log(getOperationFailedMessage(error.message));
-    }
+    printError(error);
   }
 };
