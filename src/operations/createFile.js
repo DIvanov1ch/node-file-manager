@@ -1,21 +1,29 @@
-import { resolve } from "node:path";
+import { join, posix, win32 } from "node:path";
 import { writeFile } from "node:fs/promises";
 
 import { Path } from "../Path.js";
-import { getOperationFailedMessage } from "../messages.js";
+import { extractPaths as parsePath } from "../utils/extractPaths.js";
+import { printError } from "../utils/printError.js";
+import { isWindows } from "../constants.js";
+import { getInvalidArgsMessage } from "../messages.js";
 
-export const createFile = async (filename) => {
-  const filepath = resolve(Path.getCurrentPath(), filename);
+export const createFile = async (input) => {
+  const filenames = parsePath(input);
+  if (!filenames) {
+    console.log(getInvalidArgsMessage());
+    return;
+  }
+  const newPaths = filenames.map((name) => {
+    const filename = isWindows ? win32.basename(name) : posix.basename(name);
+    return join(Path.getCurrentPath(), filename);
+  });
   try {
-    await writeFile(filepath, "", { flag: "ax" });
-    console.log(`'${filename}' successfully created!`);
+    await Promise.all(
+      newPaths.map(async (path) => {
+        await writeFile(path, "", { flag: "ax" });
+      })
+    );
   } catch (error) {
-    if (error.code === "EEXIST") {
-      console.log(
-        getOperationFailedMessage(`File already exists: '${filepath}'`)
-      );
-    } else {
-      console.log(getOperationFailedMessage(error.message));
-    }
+    printError(error);
   }
 };
