@@ -1,8 +1,8 @@
 import { readdir } from "node:fs/promises";
 
 import { Path } from "../Path.js";
-import { getOperationFailedMessage } from "../messages.js";
 import { goToDirectory as goUp } from "./goToDirectory.js";
+import { printError } from "../utils/printError.js";
 
 export const printListOfFilesAndDirectories = async () => {
   try {
@@ -20,15 +20,9 @@ export const printListOfFilesAndDirectories = async () => {
       });
     console.table(info);
   } catch (error) {
+    printError(error);
     if (error.code === "ENOENT") {
-      console.log(
-        getOperationFailedMessage(
-          `No such file or directory: '${Path.getCurrentPath()}'`
-        )
-      );
       await goUp("..");
-    } else {
-      console.log(getOperationFailedMessage(error.message));
     }
   }
 };
